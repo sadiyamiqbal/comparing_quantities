@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shopper – Become a Math Detective! | Grade 8 Comparing Quantities</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for web audio sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Canvas Confetti for celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #fdf4ff;
+    }
+    .font-display {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    /* Playful bright confetti dot pattern */
+    .market-pattern {
+      background-color: #faf5ff;
+      background-image: 
+        radial-gradient(#ec4899 1.1px, transparent 1.1px),
+        radial-gradient(#8b5cf6 1.1px, transparent 1.1px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+    }
+    /* Smooth card hover lift */
+    .hover-lift {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 30px -8px rgba(147, 51, 234, 0.18);
+    }
+    /* Animated price tag bounce */
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-7px) rotate(3deg); }
+    }
+    .tag-bob {
+      animation: bob 3s ease-in-out infinite;
+    }
+    /* Shimmer effect for exciting buttons */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.35); }
+      50% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.65); }
+    }
+    .glow-fun {
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+    /* Touch friendly custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fdf2f8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f472b6;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ec4899;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="market-pattern min-h-screen text-slate-800 flex flex-col justify-between selection:bg-pink-200">
+
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b-2 border-pink-200/80 shadow-md shadow-purple-100/50">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Title & Branding -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-md shadow-pink-300 tag-bob flex-shrink-0">
+          🛒
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <h1 class="text-lg sm:text-2xl font-black font-display bg-gradient-to-r from-purple-700 via-pink-600 to-amber-500 bg-clip-text text-transparent tracking-wide">
+              SMART SHOPPER
+            </h1>
+            <span class="px-2 py-0.5 text-[10px] sm:text-xs font-black bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 rounded-full shadow-sm">
+              Grade 8 Math
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-purple-700 font-semibold tracking-tight">Become a Math Detective &bull; Comparing Quantities</p>
+        </div>
+      </div>
+
+      <!-- Live Score & Status Pill -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 ml-auto flex-wrap justify-end">
+        <!-- Score Counter -->
+        <div class="flex items-center bg-amber-100/90 border-2 border-amber-300 rounded-2xl px-2.5 py-1 shadow-sm">
+          <span class="text-amber-500 text-lg mr-1 animate-bounce">⭐</span>
+          <div>
+            <div class="text-[9px] font-black uppercase tracking-wider text-amber-800 leading-none">Points</div>
+            <div id="totalScoreDisplay" class="text-sm sm:text-base font-black text-amber-950 leading-none mt-0.5">0</div>
+          </div>
+        </div>
+
+        <!-- Solved Counter -->
+        <div class="flex items-center bg-cyan-100/90 border-2 border-cyan-300 rounded-2xl px-2.5 py-1 shadow-sm">
+          <span class="text-cyan-600 text-lg mr-1">🎯</span>
+          <div>
+            <div class="text-[9px] font-black uppercase tracking-wider text-cyan-800 leading-none">Solved</div>
+            <div id="solvedCountDisplay" class="text-sm sm:text-base font-black text-cyan-950 leading-none mt-0.5">0 / 8</div>
+          </div>
+        </div>
+
+        <!-- Quick Utility Buttons -->
+        <button id="toggleSoundBtn" onclick="toggleSound()" title="Toggle Sound" aria-label="Toggle Sound" class="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 transition active:scale-95 shadow-sm">
+          <span id="soundIcon" class="text-base">🔊</span>
+        </button>
+        <button onclick="toggleModal('formulasModal')" title="Open Formulas Cheat Sheet" class="flex items-center gap-1 px-2.5 sm:px-3 py-2 text-xs font-extrabold text-indigo-700 bg-indigo-50 border-2 border-indigo-200 rounded-2xl hover:bg-indigo-100 transition shadow-sm active:scale-95 min-h-[40px]">
+          <span>📐</span> <span class="hidden sm:inline">Formulas</span>
+        </button>
+        <button onclick="toggleModal('scratchpadModal')" title="Open Rough Scratchpad" class="flex items-center gap-1 px-2.5 sm:px-3 py-2 text-xs font-extrabold text-pink-700 bg-pink-50 border-2 border-pink-200 rounded-2xl hover:bg-pink-100 transition shadow-sm active:scale-95 min-h-[40px]">
+          <span>✏️</span> <span class="hidden sm:inline">Scratchpad</span>
+        </button>
+        <button onclick="openAITutorModal()" title="Ask AI Math Detective" class="flex items-center gap-1.5 px-3 py-2 text-xs font-extrabold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 rounded-2xl hover:opacity-95 transition shadow-md shadow-pink-200 active:scale-95 glow-fun min-h-[40px]">
+          <span class="animate-spin text-sm">✨</span> <span class="hidden xs:inline">AI Detective</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Indicator Bar -->
+    <div class="w-full bg-pink-100 h-2.5 overflow-hidden">
+      <div id="missionProgressBar" class="bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 h-2.5 transition-all duration-500 rounded-r-full shadow-inner" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 w-full flex-grow">
+    <!-- Welcome & Instructions Card -->
+    <section class="bg-gradient-to-br from-purple-600 via-pink-500 to-amber-400 rounded-3xl p-5 sm:p-7 text-white shadow-xl shadow-purple-200/50 mb-6 relative overflow-hidden border-2 border-white/40">
+      <div class="absolute -right-6 -bottom-6 opacity-20 text-8xl sm:text-9xl select-none pointer-events-none transform rotate-12">🛍️</div>
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/30 backdrop-blur-md rounded-full text-xs font-black mb-2.5 shadow-sm text-yellow-100 uppercase tracking-wider">
+          <span>🕵️ Mission Briefing</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black font-display leading-tight mb-2 drop-shadow-sm">
+          Welcome to Smart Shopper!
+        </h2>
+        <p class="text-white/95 text-xs sm:text-sm md:text-base leading-relaxed font-medium mb-4 drop-shadow">
+          You are going to use mathematics to solve real-life shopping and money problems. Read each challenge carefully, use your formulas, enter your answers, and click <strong class="text-yellow-200 underline decoration-yellow-300 font-extrabold">Check Answer</strong>. Try to improve your understanding, not just your score!
+        </p>
+        <div class="flex flex-wrap gap-2 text-[11px] sm:text-xs font-black">
+          <span class="bg-purple-900/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-1">⭐ 1st Try: +10 pts</span>
+          <span class="bg-pink-900/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-1">💡 2nd Try: +5 pts</span>
+          <span class="bg-amber-900/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-1">🔍 Interactive Clues</span>
+          <span class="bg-purple-900/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-1">🎒 NCERT Grade 8</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab navigation -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-5 sm:mb-6 no-scrollbar -mx-1 px-1 touch-pan-x" role="tablist">
+      <button onclick="switchTab(1)" id="tab-btn-1" class="tab-button active flex-shrink-0 flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm transition bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-200 border-2 border-emerald-400">
+        <span class="text-base">🏷️</span> Section 1: Discount Detective
+      </button>
+      <button onclick="switchTab(2)" id="tab-btn-2" class="tab-button flex-shrink-0 flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border-2 border-purple-200 hover:border-blue-400 hover:bg-blue-50/50 shadow-sm">
+        <span class="text-base">🏬</span> Section 2: Which Shop is Better?
+      </button>
+      <button onclick="switchTab(3)" id="tab-btn-3" class="tab-button flex-shrink-0 flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50/50 shadow-sm">
+        <span class="text-base">📈</span> Section 3: Profit or Loss?
+      </button>
+      <button onclick="switchTab(4)" id="tab-btn-4" class="tab-button flex-shrink-0 flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm transition bg-white text-slate-700 border-2 border-purple-200 hover:border-amber-400 hover:bg-amber-50/50 shadow-sm">
+        <span class="text-base">🏦</span> Section 4: Simple Interest
+      </button>
+    </div>
+
+    <section id="section-1" class="section-pane block space-y-6">
+      <div class="bg-white rounded-3xl border-2 border-emerald-200 p-4 sm:p-6 md:p-8 shadow-xl shadow-emerald-100/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-emerald-100">
+          <div>
+            <span class="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full inline-block">Investigation #1</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 font-display mt-1">🏷️ Discount Detective</h3>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Find the discount value and the final selling price of the item.</p>
+          </div>
+          <button onclick="generateDiscountQuestion()" class="flex items-center gap-2 px-4 py-2.5 text-xs font-black text-emerald-800 bg-emerald-100 hover:bg-emerald-200 rounded-2xl transition active:scale-95 shadow-sm border border-emerald-300">
+            <span>🔄</span> New Item
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Item Card Visual -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-emerald-100 via-teal-50 to-cyan-100 rounded-3xl p-5 sm:p-6 border-2 border-emerald-300 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-sm">
+            <div id="s1ItemEmoji" class="text-7xl sm:text-8xl mb-2 tag-bob filter drop-shadow">🎒</div>
+            <span id="s1ItemCategory" class="text-xs font-extrabold text-emerald-800 bg-white/90 border border-emerald-300 px-3.5 py-0.5 rounded-full mb-2 shadow-sm">School Essentials</span>
+            <h4 id="s1ItemName" class="text-2xl sm:text-3xl font-black text-slate-800 mb-3 font-display">School Bag</h4>
+            
+            <div class="w-full bg-white rounded-2xl p-4 border-2 border-emerald-200 shadow-md text-left space-y-2.5">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 font-bold">Marked Price (MP):</span>
+                <span id="s1DisplayMP" class="text-xl sm:text-2xl font-black text-slate-900">₹1,500</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 font-bold">Discount Offered:</span>
+                <span id="s1DisplayDiscountRate" class="text-xl sm:text-2xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">20% OFF</span>
+              </div>
+            </div>
+
+            <!-- Discount preset quick buttons -->
+            <div class="w-full mt-4">
+              <label class="block text-xs font-black text-emerald-900 text-left mb-2">Try altering the discount rate:</label>
+              <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="s1DiscountPresets">
+                <button type="button" onclick="setDiscountRate(5)" class="rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]">5%</button>
+                <button type="button" onclick="setDiscountRate(10)" class="rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]">10%</button>
+                <button type="button" onclick="setDiscountRate(15)" class="rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]">15%</button>
+                <button type="button" onclick="setDiscountRate(20)" class="rate-btn active text-xs py-2 px-2 font-black rounded-xl border-2 bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-600 text-white active:scale-95 shadow-md shadow-emerald-200 min-h-[44px]">20%</button>
+                <button type="button" onclick="setDiscountRate(25)" class="rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]">25%</button>
+                <button type="button" onclick="setDiscountRate(30)" class="rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]">30%</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detective Work Area / Inputs -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+            <div class="space-y-4 bg-emerald-50/50 rounded-3xl p-4 sm:p-5 border-2 border-emerald-200">
+              <h5 class="text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-900 flex items-center gap-2">
+                <span>🔍</span> Your Calculation Task
+              </h5>
+              
+              <!-- Input: Discount Amount -->
+              <div>
+                <label for="s1InputDiscount" class="block text-xs sm:text-sm font-black text-slate-800 mb-1.5">
+                  1. How much is the discount amount in Rupees? (₹)
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">₹</span>
+                  <input type="number" id="s1InputDiscount" placeholder="e.g. 300" class="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-emerald-200 focus:outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500 font-bold text-slate-900 text-base shadow-sm bg-white">
+                </div>
+              </div>
+
+              <!-- Input: Selling Price -->
+              <div>
+                <label for="s1InputSP" class="block text-xs sm:text-sm font-black text-slate-800 mb-1.5">
+                  2. What is the customer's final Selling Price (SP)? (₹)
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">₹</span>
+                  <input type="number" id="s1InputSP" placeholder="e.g. 1200" class="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-emerald-200 focus:outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500 font-bold text-slate-900 text-base shadow-sm bg-white">
+                </div>
+              </div>
+
+              <!-- Hint Display -->
+              <div id="s1HintBox" class="hidden p-4 rounded-2xl bg-amber-100/90 border-2 border-amber-300 text-amber-950 text-xs sm:text-sm leading-relaxed shadow-sm">
+                <strong>💡 Detective Hint:</strong> Remember, <code class="font-mono bg-white px-1.5 py-0.5 rounded-lg border border-amber-200 font-bold">Discount = MP × Discount% / 100</code>. Then subtract that discount from the Marked Price to get the final bill amount (Selling Price)!
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <button onclick="checkDiscountAnswer()" class="flex-1 min-w-[140px] py-3.5 px-5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-emerald-200 transition min-h-[48px]">
+                Check Answer
+              </button>
+              <button onclick="showHint(1)" class="py-3.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-amber-300 min-h-[48px]">
+                <span>💡</span> Need a Hint?
+              </button>
+              <button onclick="askAITutorForCurrentSection(1)" class="py-3.5 px-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-purple-300 min-h-[48px]" title="Ask AI Detective about this item">
+                <span>✨</span> Ask AI
+              </button>
+            </div>
+
+            <!-- Feedback & Detailed Explanation Box -->
+            <div id="s1FeedbackBox" class="hidden p-4 rounded-2xl text-sm transition-all duration-300 shadow-md"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-2" class="section-pane hidden space-y-6">
+      <div class="bg-white rounded-3xl border-2 border-blue-200 p-4 sm:p-6 md:p-8 shadow-xl shadow-blue-100/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-blue-100">
+          <div>
+            <span class="text-[11px] font-black uppercase tracking-wider text-blue-700 bg-blue-100 border border-blue-300 px-3 py-1 rounded-full inline-block">Investigation #2</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 font-display mt-1">🏬 Which Shop is Better?</h3>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Two retailers offer different discounts on the same product. Find the real deal!</p>
+          </div>
+          <button onclick="generateShopComparisonQuestion()" class="flex items-center gap-2 px-4 py-2.5 text-xs font-black text-blue-800 bg-blue-100 hover:bg-blue-200 rounded-2xl transition active:scale-95 shadow-sm border border-blue-300">
+            <span>🔄</span> New Deal
+          </button>
+        </div>
+
+        <div class="text-center mb-6">
+          <span class="text-5xl sm:text-6xl inline-block mb-1 tag-bob" id="s2ProductEmoji">🎧</span>
+          <h4 id="s2ProductName" class="text-xl sm:text-2xl font-black text-slate-800 font-display">Wireless Headphones</h4>
+          <p class="text-xs sm:text-sm text-slate-500 font-medium">Compare both offers carefully. A bigger percentage discount is not always the cheapest price!</p>
+        </div>
+
+        <!-- The Two Shop Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <!-- Shop A -->
+          <div id="cardShopA" class="hover-lift border-3 border-blue-200 hover:border-blue-500 bg-gradient-to-br from-blue-50 via-sky-50 to-white rounded-3xl p-5 sm:p-6 transition flex flex-col justify-between relative cursor-pointer shadow-md" onclick="selectShop('A')">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="text-3xl">🏪</span>
+                <div>
+                  <h5 class="font-black text-slate-900 text-base sm:text-lg">MegaMart (Shop A)</h5>
+                  <span class="text-xs text-blue-700 font-extrabold bg-blue-100 px-2 py-0.5 rounded-full">Mega Clearance</span>
+                </div>
+              </div>
+              <input type="radio" name="shopChoice" id="radioShopA" value="A" class="w-6 h-6 text-blue-600 focus:ring-blue-500">
+            </div>
+
+            <div class="space-y-2 py-4 border-y-2 border-blue-100/80">
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-slate-600 font-bold">Marked Price:</span>
+                <span id="s2ShopAMP" class="font-black text-slate-900 text-lg">₹2,000</span>
+              </div>
+              <div class="flex justify-between text-sm sm:text-base items-center">
+                <span class="text-slate-600 font-bold">Discount Offered:</span>
+                <span id="s2ShopADisc" class="font-black text-blue-600 text-xl bg-blue-100 px-3 py-0.5 rounded-xl">20% OFF</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-2 text-center">
+              <span class="text-xs font-black text-blue-800 bg-blue-200/80 px-4 py-2 rounded-2xl inline-block w-full shadow-sm">
+                👉 Tap to select Shop A
+              </span>
+            </div>
+          </div>
+
+          <!-- Shop B -->
+          <div id="cardShopB" class="hover-lift border-3 border-purple-200 hover:border-purple-500 bg-gradient-to-br from-purple-50 via-fuchsia-50 to-white rounded-3xl p-5 sm:p-6 transition flex flex-col justify-between relative cursor-pointer shadow-md" onclick="selectShop('B')">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="text-3xl">🏬</span>
+                <div>
+                  <h5 class="font-black text-slate-900 text-base sm:text-lg">City SuperStore (Shop B)</h5>
+                  <span class="text-xs text-purple-700 font-extrabold bg-purple-100 px-2 py-0.5 rounded-full">Direct Discount</span>
+                </div>
+              </div>
+              <input type="radio" name="shopChoice" id="radioShopB" value="B" class="w-6 h-6 text-purple-600 focus:ring-purple-500">
+            </div>
+
+            <div class="space-y-2 py-4 border-y-2 border-purple-100/80">
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-slate-600 font-bold">Marked Price:</span>
+                <span id="s2ShopBMP" class="font-black text-slate-900 text-lg">₹1,800</span>
+              </div>
+              <div class="flex justify-between text-sm sm:text-base items-center">
+                <span class="text-slate-600 font-bold">Discount Offered:</span>
+                <span id="s2ShopBDisc" class="font-black text-purple-600 text-xl bg-purple-100 px-3 py-0.5 rounded-xl">10% OFF</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-2 text-center">
+              <span class="text-xs font-black text-purple-800 bg-purple-200/80 px-4 py-2 rounded-2xl inline-block w-full shadow-sm">
+                👉 Tap to select Shop B
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Prompt & Submission -->
+        <div class="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-3xl p-4 sm:p-6 border-2 border-blue-200 text-center space-y-4 shadow-sm">
+          <p class="font-black text-slate-800 text-base sm:text-lg md:text-xl">
+            “Which shop gives the customer the <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-xl border border-emerald-300">lower final price</span>?”
+          </p>
+
+          <div id="s2HintBox" class="hidden p-4 rounded-2xl bg-amber-100/90 border-2 border-amber-300 text-amber-950 text-xs sm:text-sm text-left shadow-sm">
+            <strong>💡 Detective Hint:</strong> Calculate the final Selling Price for both shops!
+            <br>Shop A: <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">SP = MP − (MP × Discount% / 100)</code>
+            <br>Shop B: <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">SP = MP − (MP × Discount% / 100)</code>
+            <br>Then compare which SP is smaller!
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <button onclick="checkShopAnswer()" class="flex-1 sm:flex-initial py-3.5 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-blue-200 transition min-h-[48px]">
+              Check Answer
+            </button>
+            <button onclick="showHint(2)" class="py-3.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-amber-300 min-h-[48px]">
+              <span>💡</span> Need a Hint?
+            </button>
+            <button onclick="askAITutorForCurrentSection(2)" class="py-3.5 px-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-purple-300 min-h-[48px]" title="Ask AI Detective about comparing these shops">
+              <span>✨</span> Ask AI
+            </button>
+          </div>
+
+          <div id="s2FeedbackBox" class="hidden p-4 rounded-2xl text-left text-sm transition-all duration-300 shadow-md"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-3" class="section-pane hidden space-y-6">
+      <div class="bg-white rounded-3xl border-2 border-purple-200 p-4 sm:p-6 md:p-8 shadow-xl shadow-purple-100/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-purple-100">
+          <div>
+            <span class="text-[11px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 border border-purple-300 px-3 py-1 rounded-full inline-block">Investigation #3</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 font-display mt-1">📈 Profit or Loss?</h3>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Analyze trader accounts: determine profit or loss, the difference, and percentage on CP.</p>
+          </div>
+          <button onclick="generateProfitLossQuestion()" class="flex items-center gap-2 px-4 py-2.5 text-xs font-black text-purple-800 bg-purple-100 hover:bg-purple-200 rounded-2xl transition active:scale-95 shadow-sm border border-purple-300">
+            <span>🔄</span> Next Challenge
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Trader Card -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-purple-100 via-fuchsia-50 to-pink-100 rounded-3xl p-5 sm:p-6 border-2 border-purple-300 flex flex-col justify-center items-center text-center shadow-sm">
+            <div id="s3ItemEmoji" class="text-7xl sm:text-8xl mb-2 tag-bob filter drop-shadow">🚲</div>
+            <h4 id="s3ItemName" class="text-2xl sm:text-3xl font-black text-slate-900 mb-1 font-display">Mountain Bicycle</h4>
+            <p class="text-xs font-bold text-purple-700 mb-4 bg-white/80 px-3 py-0.5 rounded-full border border-purple-200">Local Merchant Record</p>
+
+            <div class="w-full space-y-3">
+              <div class="bg-white p-4 rounded-2xl border-2 border-purple-200 flex justify-between items-center shadow-md">
+                <span class="text-xs sm:text-sm font-bold text-slate-600">Cost Price (CP):</span>
+                <span id="s3DisplayCP" class="text-xl sm:text-2xl font-black text-slate-900">₹800</span>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border-2 border-purple-200 flex justify-between items-center shadow-md">
+                <span class="text-xs sm:text-sm font-bold text-slate-600">Selling Price (SP):</span>
+                <span id="s3DisplaySP" class="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-700 to-pink-600 bg-clip-text text-transparent">₹920</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multiple Choice Questions & Inputs -->
+          <div class="lg:col-span-7 space-y-4">
+            <!-- Question 1: Nature -->
+            <div class="bg-purple-50/60 p-4 sm:p-5 rounded-3xl border-2 border-purple-200 shadow-sm">
+              <label class="block text-xs sm:text-sm font-black text-slate-800 mb-2.5">
+                1. Did the merchant make a Profit or a Loss?
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="s3NatureOptions">
+                <button type="button" onclick="selectNature('Profit')" id="btnNatureProfit" class="py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-black text-sm text-slate-700 hover:border-emerald-500 flex items-center justify-center gap-2 active:scale-95 shadow-sm min-h-[48px]">
+                  <span class="text-lg">🟢</span> Profit (SP > CP)
+                </button>
+                <button type="button" onclick="selectNature('Loss')" id="btnNatureLoss" class="py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-black text-sm text-slate-700 hover:border-rose-500 flex items-center justify-center gap-2 active:scale-95 shadow-sm min-h-[48px]">
+                  <span class="text-lg">🔴</span> Loss (CP > SP)
+                </button>
+              </div>
+            </div>
+
+            <!-- Question 2: Amount -->
+            <div class="bg-purple-50/60 p-4 sm:p-5 rounded-3xl border-2 border-purple-200 shadow-sm">
+              <label for="s3InputAmount" class="block text-xs sm:text-sm font-black text-slate-800 mb-1.5">
+                2. Calculate the Profit or Loss amount: (₹)
+              </label>
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">₹</span>
+                <input type="number" id="s3InputAmount" placeholder="Difference in ₹" class="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-purple-200 font-bold text-slate-900 text-base focus:ring-4 focus:ring-purple-300 focus:outline-none bg-white shadow-sm">
+              </div>
+            </div>
+
+            <!-- Question 3: Percentage (Multiple Choice) -->
+            <div class="bg-purple-50/60 p-4 sm:p-5 rounded-3xl border-2 border-purple-200 shadow-sm">
+              <label class="block text-xs sm:text-sm font-black text-slate-800 mb-2">
+                3. What is the Profit% or Loss%? (Calculated on CP)
+              </label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="s3PercentChoiceContainer">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <div id="s3HintBox" class="hidden p-4 rounded-2xl bg-amber-100/90 border-2 border-amber-300 text-amber-950 text-xs sm:text-sm shadow-sm">
+              <strong>💡 Detective Hint:</strong>
+              If SP > CP, it's <em>Profit = SP − CP</em>.
+              <br>If CP > SP, it's <em>Loss = CP − SP</em>.
+              <br>Percentage is always calculated on <strong>Cost Price (CP)</strong>:
+              <br><code class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-200 font-bold">% = (Amount / CP) × 100</code>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <button onclick="checkProfitLossAnswer()" class="flex-1 min-w-[140px] py-3.5 px-6 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 hover:opacity-95 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-purple-200 transition min-h-[48px]">
+                Check Answer
+              </button>
+              <button onclick="showHint(3)" class="py-3.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-amber-300 min-h-[48px]">
+                <span>💡</span> Need a Hint?
+              </button>
+              <button onclick="askAITutorForCurrentSection(3)" class="py-3.5 px-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-purple-300 min-h-[48px]" title="Ask AI Detective about Profit & Loss">
+                <span>✨</span> Ask AI
+              </button>
+            </div>
+
+            <div id="s3FeedbackBox" class="hidden p-4 rounded-2xl text-sm transition-all duration-300 shadow-md"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-4" class="section-pane hidden space-y-6">
+      <div class="bg-white rounded-3xl border-2 border-amber-200 p-4 sm:p-6 md:p-8 shadow-xl shadow-amber-100/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-amber-100">
+          <div>
+            <span class="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 border border-amber-300 px-3 py-1 rounded-full inline-block">Investigation #4</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 font-display mt-1">🏦 Simple Interest Challenge</h3>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Calculate the extra money earned or paid on bank loans and deposits over time.</p>
+          </div>
+          <button onclick="generateSIQuestion()" class="flex items-center gap-2 px-4 py-2.5 text-xs font-black text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-2xl transition active:scale-95 shadow-sm border border-amber-300">
+            <span>🔄</span> New Loan/Deposit
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Bank Passbook Card -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 rounded-3xl p-5 sm:p-6 border-2 border-amber-300 flex flex-col justify-between shadow-sm">
+            <div>
+              <div class="flex items-center justify-between border-b-2 border-amber-200 pb-3 mb-4">
+                <span class="font-display font-black text-amber-950 text-base sm:text-lg flex items-center gap-2">
+                  <span class="text-2xl">🏛️</span> National Student Bank
+                </span>
+                <span class="text-[10px] font-black uppercase tracking-wider bg-amber-300/80 text-amber-950 px-2.5 py-1 rounded-full shadow-sm">Passbook</span>
+              </div>
+
+              <p id="s4ScenarioText" class="text-xs sm:text-sm text-amber-950 mb-4 font-semibold italic bg-white/70 p-3 rounded-2xl border border-amber-200">
+                A farmer borrowed money to buy modern solar drip equipment.
+              </p>
+
+              <div class="space-y-3 font-mono text-sm">
+                <div class="bg-white p-3.5 rounded-2xl border-2 border-amber-200 flex justify-between items-center shadow-md">
+                  <span class="text-slate-600 font-bold text-xs">Principal (P):</span>
+                  <span id="s4DisplayP" class="font-black text-slate-900 text-lg sm:text-xl">₹5,000</span>
+                </div>
+                <div class="bg-white p-3.5 rounded-2xl border-2 border-amber-200 flex justify-between items-center shadow-md">
+                  <span class="text-slate-600 font-bold text-xs">Rate (R):</span>
+                  <span id="s4DisplayR" class="font-black text-amber-700 text-lg sm:text-xl">10% p.a.</span>
+                </div>
+                <div class="bg-white p-3.5 rounded-2xl border-2 border-amber-200 flex justify-between items-center shadow-md">
+                  <span class="text-slate-600 font-bold text-xs">Time (T):</span>
+                  <span id="s4DisplayT" class="font-black text-slate-900 text-lg sm:text-xl">2 Years</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t-2 border-amber-200 text-xs text-amber-900 font-bold">
+              Formula: <code class="bg-white px-2 py-0.5 rounded-lg border border-amber-200 font-mono">SI = (P × R × T) / 100</code>
+            </div>
+          </div>
+
+          <!-- User Calculation Inputs -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="bg-amber-50/50 p-4 sm:p-5 rounded-3xl border-2 border-amber-200 space-y-4 shadow-sm">
+              <h5 class="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                <span>🧮</span> Calculate the Bank Statement
+              </h5>
+
+              <!-- Input: Simple Interest -->
+              <div>
+                <label for="s4InputSI" class="block text-xs sm:text-sm font-black text-slate-800 mb-1.5">
+                  1. What is the Simple Interest (SI)? (₹)
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">₹</span>
+                  <input type="number" id="s4InputSI" placeholder="e.g. 1000" class="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-amber-200 font-bold text-slate-900 text-base focus:ring-4 focus:ring-amber-300 focus:outline-none bg-white shadow-sm">
+                </div>
+              </div>
+
+              <!-- Input: Total Amount -->
+              <div>
+                <label for="s4InputAmount" class="block text-xs sm:text-sm font-black text-slate-800 mb-1.5">
+                  2. What is the total Amount to be repaid? (A = Principal + SI) (₹)
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-black text-lg">₹</span>
+                  <input type="number" id="s4InputAmount" placeholder="e.g. 6000" class="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-amber-200 font-bold text-slate-900 text-base focus:ring-4 focus:ring-amber-300 focus:outline-none bg-white shadow-sm">
+                </div>
+              </div>
+
+              <div id="s4HintBox" class="hidden p-4 rounded-2xl bg-amber-100/90 border-2 border-amber-300 text-amber-950 text-xs sm:text-sm shadow-sm">
+                <strong>💡 Detective Hint:</strong>
+                Multiply <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-mono font-bold">P × R × T</code> and divide by 100 to get <strong>SI</strong>.
+                Then add that interest back to the starting loan amount (Principal): <code class="bg-white px-1.5 py-0.5 rounded border border-amber-200 font-mono font-bold">Amount = P + SI</code>!
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <button onclick="checkSIAnswer()" class="flex-1 min-w-[140px] py-3.5 px-6 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:opacity-95 active:scale-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-amber-200 transition min-h-[48px]">
+                Check Answer
+              </button>
+              <button onclick="showHint(4)" class="py-3.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-amber-300 min-h-[48px]">
+                <span>💡</span> Need a Hint?
+              </button>
+              <button onclick="askAITutorForCurrentSection(4)" class="py-3.5 px-4 bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5 active:scale-95 border border-purple-300 min-h-[48px]" title="Ask AI Detective about Simple Interest">
+                <span>✨</span> Ask AI
+              </button>
+            </div>
+
+            <div id="s4FeedbackBox" class="hidden p-4 rounded-2xl text-sm transition-all duration-300 shadow-md"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="completionSection" class="hidden mt-8 bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 rounded-3xl p-6 sm:p-8 text-white shadow-2xl text-center relative overflow-hidden border-2 border-white/40">
+      <div class="relative z-10 max-w-xl mx-auto space-y-4">
+        <span class="text-6xl sm:text-7xl inline-block animate-bounce">🏆</span>
+        <h3 class="text-2xl sm:text-4xl font-black font-display drop-shadow">Master Math Detective Certified!</h3>
+        <p class="text-white/90 text-sm sm:text-base font-semibold">
+          Congratulations on completing challenges across all sections! You have demonstrated great mastery in percentage discounts, comparative pricing, profit & loss, and simple interest.
+        </p>
+        <div class="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30 flex justify-around shadow-inner">
+          <div>
+            <div class="text-[10px] sm:text-xs uppercase text-yellow-200 font-black">Total Score</div>
+            <div id="certFinalScore" class="text-2xl sm:text-4xl font-black">0</div>
+          </div>
+          <div class="border-r border-white/30"></div>
+          <div>
+            <div class="text-[10px] sm:text-xs uppercase text-yellow-200 font-black">Investigations</div>
+            <div id="certSolvedCount" class="text-2xl sm:text-4xl font-black">0</div>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-center gap-4">
+          <button onclick="restartMission()" class="py-3.5 px-8 bg-white text-purple-900 hover:bg-yellow-100 font-black text-sm sm:text-base rounded-2xl shadow-xl transition transform active:scale-95">
+            🔄 Restart & Practice Again
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mt-10 bg-white rounded-3xl border-2 border-purple-200 p-5 sm:p-6 shadow-md">
+      <div class="flex items-center justify-between cursor-pointer" onclick="toggleTeacherMode()">
+        <div class="flex items-center gap-3">
+          <span class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-100 to-pink-100 flex items-center justify-center text-2xl border border-purple-200 flex-shrink-0">👩‍🏫</span>
+          <div>
+            <h4 class="font-black text-slate-800 text-sm sm:text-base">Teacher Information & Curricular Alignment</h4>
+            <p class="text-xs text-slate-500 font-medium">Curriculum notes, pedagogical goals, and classroom implementation suggestions.</p>
+          </div>
+        </div>
+        <span id="teacherToggleIcon" class="text-purple-600 font-black text-xs sm:text-sm bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">▼ View</span>
+      </div>
+
+      <div id="teacherContent" class="hidden mt-4 pt-4 border-t-2 border-purple-100 text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-purple-50/60 p-3.5 rounded-2xl border border-purple-200 text-xs">
+          <div><strong class="text-purple-950 font-black">Topic:</strong> Comparing Quantities</div>
+          <div><strong class="text-purple-950 font-black">Grade:</strong> Grade 8 (Age 13–14)</div>
+          <div><strong class="text-purple-950 font-black">Subject:</strong> Mathematics (NCERT / CBSE)</div>
+          <div><strong class="text-purple-950 font-black">Learning Mode:</strong> Active Inquiry & Simulation</div>
+        </div>
+        <p>
+          <strong>Purpose:</strong> To bridge procedural formula memorization into everyday conceptual mastery. By analyzing discount schemes, comparing multi-tier retailer promotions, identifying true profit/loss margins, and computing interest on loans, students see the authentic value of mathematics in daily commerce.
+        </p>
+        <p>
+          <strong>Differentiated Classroom Strategies:</strong>
+          Encourage peer pairs to discuss Section 2 ("Which Shop is Better?") before computing. Ask: <em>"Can a store with a smaller percentage discount still be cheaper? Why?"</em> (Answer: Because Marked Price is the base value!).
+        </p>
+      </div>
+    </footer>
+  </main>
+
+  <div id="formulasModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border-2 border-indigo-200">
+      <div class="flex justify-between items-center border-b-2 border-indigo-100 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <span class="text-3xl">📐</span>
+          <h3 class="text-lg sm:text-xl font-black font-display text-slate-900">Formula Cheat Sheet</h3>
+        </div>
+        <button onclick="toggleModal('formulasModal')" class="w-9 h-9 rounded-2xl bg-indigo-50 hover:bg-indigo-100 flex items-center justify-center font-black text-indigo-700 transition active:scale-95 border border-indigo-200">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs sm:text-sm">
+        <!-- Card 1 -->
+        <div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 space-y-1.5 shadow-sm">
+          <h5 class="font-black text-emerald-950 flex items-center gap-1.5">🏷️ Discount & Selling Price</h5>
+          <p class="text-slate-800 font-mono"><code>Discount = (MP × Discount%) / 100</code></p>
+          <p class="text-slate-800 font-mono"><code>Selling Price (SP) = MP − Discount</code></p>
+          <p class="text-[11px] text-emerald-800 font-bold italic mt-1">*Discount is always calculated on Marked Price (MP).</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-4 rounded-2xl bg-purple-50 border-2 border-purple-200 space-y-1.5 shadow-sm">
+          <h5 class="font-black text-purple-950 flex items-center gap-1.5">📈 Profit & Loss</h5>
+          <p class="text-slate-800 font-mono"><code>Profit = SP − CP (when SP > CP)</code></p>
+          <p class="text-slate-800 font-mono"><code>Loss = CP − SP (when CP > SP)</code></p>
+          <p class="text-[11px] text-purple-800 font-bold italic mt-1">*Profit or Loss is the simple arithmetic difference.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-200 space-y-1.5 shadow-sm">
+          <h5 class="font-black text-indigo-950 flex items-center gap-1.5">📊 Profit% & Loss%</h5>
+          <p class="text-slate-800 font-mono"><code>Profit% = (Profit / CP) × 100</code></p>
+          <p class="text-slate-800 font-mono"><code>Loss% = (Loss / CP) × 100</code></p>
+          <p class="text-[11px] text-indigo-800 font-bold italic mt-1">*Always calculated on Cost Price (CP)!</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-200 space-y-1.5 shadow-sm">
+          <h5 class="font-black text-amber-950 flex items-center gap-1.5">🏦 Simple Interest (SI)</h5>
+          <p class="text-slate-800 font-mono"><code>SI = (P × R × T) / 100</code></p>
+          <p class="text-slate-800 font-mono"><code>Total Amount = Principal + SI</code></p>
+          <p class="text-[11px] text-amber-800 font-bold italic mt-1">*P: Principal, R: Rate % p.a., T: Time in years.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button onclick="toggleModal('formulasModal')" class="py-3 px-8 bg-slate-900 text-white font-black text-xs sm:text-sm rounded-2xl hover:bg-slate-800 active:scale-95 shadow-md">
+          Got it, return to challenge!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="scratchpadModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border-2 border-pink-200 flex flex-col">
+      <div class="flex justify-between items-center border-b-2 border-pink-100 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl sm:text-3xl">✏️</span>
+          <div>
+            <h3 class="text-base sm:text-lg font-black font-display text-slate-900">Detective Rough Scratchpad</h3>
+            <p class="text-xs text-slate-500 font-medium">Do calculations, doodles, and notes right here!</p>
+          </div>
+        </div>
+        <button onclick="toggleModal('scratchpadModal')" class="w-9 h-9 rounded-2xl bg-pink-50 hover:bg-pink-100 flex items-center justify-center font-black text-pink-700 transition active:scale-95 border border-pink-200">✕</button>
+      </div>
+
+      <!-- Canvas for drawing/rough calculations -->
+      <div id="scratchContainer" class="relative bg-amber-50/50 border-2 border-dashed border-pink-300 rounded-2xl overflow-hidden touch-none h-64 sm:h-72 w-full">
+        <canvas id="scratchCanvas" class="w-full h-full cursor-crosshair block"></canvas>
+      </div>
+
+      <div class="flex justify-between items-center mt-3 pt-1">
+        <span class="text-[11px] text-slate-500 font-semibold">Draw with your finger or mouse</span>
+        <button onclick="clearScratchpad()" class="px-3.5 py-2 bg-rose-100 text-rose-800 hover:bg-rose-200 font-black text-xs rounded-xl transition active:scale-95 border border-rose-300 min-h-[40px]">
+          🧹 Clear Pad
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Math Detective Modal (Gemini LLM Integration) -->
+  <div id="aiTutorModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-hidden p-4 sm:p-6 md:p-7 shadow-2xl border-2 border-purple-200 flex flex-col">
+      <!-- Header -->
+      <div class="flex justify-between items-center border-b-2 border-purple-100 pb-3 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 flex items-center justify-center text-white text-xl shadow-md shadow-purple-200 flex-shrink-0">
+            🕵️‍♂️
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <h3 class="text-base sm:text-lg font-black font-display text-slate-900">Inspector Rupee</h3>
+              <span class="px-2 py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 rounded-full border border-purple-300">Powered by Gemini</span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-purple-700 font-bold">Your personal 24/7 Grade 8 Math Detective Mentor</p>
+          </div>
+        </div>
+        <button onclick="toggleModal('aiTutorModal')" class="w-9 h-9 rounded-2xl bg-purple-50 hover:bg-purple-100 flex items-center justify-center font-black text-purple-700 transition active:scale-95 border border-purple-200">✕</button>
+      </div>
+
+      <!-- Quick Action Chips -->
+      <div class="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1">
+        <button onclick="askPresetPrompt('concept')" class="flex-shrink-0 px-3 py-1.5 text-[11px] sm:text-xs font-bold bg-purple-50 text-purple-800 border-2 border-purple-200 rounded-xl hover:bg-purple-100 transition active:scale-95">
+          💡 Explain simply
+        </button>
+        <button onclick="askPresetPrompt('socratic')" class="flex-shrink-0 px-3 py-1.5 text-[11px] sm:text-xs font-bold bg-emerald-50 text-emerald-800 border-2 border-emerald-200 rounded-xl hover:bg-emerald-100 transition active:scale-95">
+          🧩 Step-by-step
+        </button>
+        <button onclick="askPresetPrompt('realworld')" class="flex-shrink-0 px-3 py-1.5 text-[11px] sm:text-xs font-bold bg-amber-50 text-amber-900 border-2 border-amber-200 rounded-xl hover:bg-amber-100 transition active:scale-95">
+          🛒 Real-world use
+        </button>
+        <button onclick="askPresetPrompt('story')" class="flex-shrink-0 px-3 py-1.5 text-[11px] sm:text-xs font-bold bg-pink-50 text-pink-800 border-2 border-pink-200 rounded-xl hover:bg-pink-100 transition active:scale-95">
+          🎭 Shopping story
+        </button>
+      </div>
+
+      <!-- Chat / Explanation Output Window -->
+      <div id="aiChatWindow" class="flex-grow overflow-y-auto space-y-3 bg-purple-50/40 border-2 border-purple-100 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-700 min-h-[200px] max-h-[340px]">
+        <div class="bg-white p-3.5 rounded-2xl border-2 border-purple-100 shadow-sm space-y-1">
+          <div class="font-black text-purple-800 flex items-center gap-1.5 text-xs">
+            <span>🕵️‍♂️ Inspector Rupee says:</span>
+          </div>
+          <p class="leading-relaxed font-medium">
+            Namaste Math Detective! I am right here to help you crack comparing quantities, discounts, profit & loss, and simple interest.
+            Click any quick question above, or ask me anything you're curious about below!
+          </p>
+        </div>
+      </div>
+
+      <!-- User Query Input Bar -->
+      <div class="mt-3 pt-2 border-t-2 border-purple-100">
+        <form id="aiPromptForm" onsubmit="handleUserAISubmit(event)" class="flex gap-2">
+          <input 
+            type="text" 
+            id="aiUserQueryInput" 
+            placeholder="Ask a clue or in Hinglish..." 
+            class="flex-1 px-3.5 py-2.5 text-xs sm:text-sm rounded-2xl border-2 border-purple-200 focus:outline-none focus:ring-4 focus:ring-purple-300 focus:border-purple-500 font-medium bg-white"
+          >
+          <button 
+            type="submit" 
+            id="aiSubmitBtn" 
+            class="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition flex items-center gap-1.5 active:scale-95 min-h-[42px]"
+          >
+            <span>Ask</span> <span>🚀</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       GEMINI API INTEGRATION LOGIC
+       ========================================================================== */
+    const GEMINI_SYSTEM_PROMPT = `You are "Inspector Rupee", a friendly, witty, and encouraging Grade 8 Mathematics mentor for Indian students learning NCERT / CBSE "Comparing Quantities" (Age 13-14).
+Key rules:
+1. Speak warmly, respectfully, and enthusiastically using simple, clear words. You can naturally blend occasional friendly Indian school phrasing (like "Shabash!", "Aha!", "Notice this clue!").
+2. Teach conceptually and Socratically. NEVER give away final direct numbers or numerical answers immediately unless the student explicitly asks to check their solved result or after guiding them.
+3. Keep explanations structured with short bullet points, clear steps, and emoji clues.
+4. Emphasize why formulas make common sense (e.g., "Discount is subtracted because the shopkeeper takes away part of the price", "Profit% is computed on Cost Price because that is the money you actually spent from your pocket!").
+5. Keep answers concise (under 160 words) so middle school students enjoy reading them without getting overwhelmed.`;
+
+    // Helper: Call Gemini 3 Flash with exponential backoff
+    async function callGemini(userPrompt, systemInstruction = GEMINI_SYSTEM_PROMPT, maxRetries = 3) {
+      const apiKey = ""; // Canvas automatically supplies the API key at runtime
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userPrompt }] }],
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        }
+      };
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP Error ${response.status}`);
+          }
+
+          const result = await response.json();
+          const candidate = result.candidates?.[0];
+          if (candidate && candidate.content?.parts?.[0]?.text) {
+            return candidate.content.parts[0].text;
+          } else {
+            throw new Error('Unexpected response format from Gemini');
+          }
+        } catch (err) {
+          if (attempt === maxRetries - 1) throw err;
+          // Exponential backoff
+          const delay = Math.pow(2, attempt) * 1000;
+          await new Promise(res => setTimeout(res, delay));
+        }
+      }
+    }
+
+    function openAITutorModal() {
+      toggleModal('aiTutorModal');
+    }
+
+    function appendAIMessage(sender, messageHtml, isAI = false) {
+      const chatWin = document.getElementById('aiChatWindow');
+      const msgCard = document.createElement('div');
+      msgCard.className = isAI 
+        ? 'bg-purple-50/70 p-3.5 rounded-2xl border border-purple-200 text-slate-800 space-y-1 shadow-sm' 
+        : 'bg-white p-3 rounded-2xl border border-slate-200 text-slate-800 space-y-1 ml-6';
+      
+      const title = document.createElement('div');
+      title.className = `font-bold text-xs flex items-center gap-1.5 ${isAI ? 'text-purple-700' : 'text-slate-600'}`;
+      title.innerHTML = isAI ? '<span>🕵️‍♂️ Inspector Rupee</span>' : '<span>🙋 You</span>';
+
+      const content = document.createElement('div');
+      content.className = 'leading-relaxed text-xs md:text-sm whitespace-pre-wrap';
+      content.innerHTML = messageHtml;
+
+      msgCard.appendChild(title);
+      msgCard.appendChild(content);
+      chatWin.appendChild(msgCard);
+      chatWin.scrollTop = chatWin.scrollHeight;
+    }
+
+    function showAILoading() {
+      const chatWin = document.getElementById('aiChatWindow');
+      const loader = document.createElement('div');
+      loader.id = 'aiLoadingIndicator';
+      loader.className = 'bg-purple-50 p-3 rounded-2xl border border-purple-100 text-purple-700 text-xs flex items-center gap-2 animate-pulse';
+      loader.innerHTML = `<span>🕵️‍♂️</span> <span>Inspector Rupee is analyzing the clues...</span>`;
+      chatWin.appendChild(loader);
+      chatWin.scrollTop = chatWin.scrollHeight;
+    }
+
+    function removeAILoading() {
+      const loader = document.getElementById('aiLoadingIndicator');
+      if (loader) loader.remove();
+    }
+
+    function getCurrentSectionContext() {
+      const tab = state.currentTab;
+      if (tab === 1) {
+        return `Current Topic: Section 1 (Discount Detective). Item: ${state.s1.item?.name || 'School Bag'}, Marked Price (MP) = ₹${state.s1.mp}, Discount Rate = ${state.s1.rate}%, Correct Discount = ₹${state.s1.discount}, Correct Selling Price = ₹${state.s1.sp}.`;
+      } else if (tab === 2) {
+        return `Current Topic: Section 2 (Which Shop is Better?). Product: ${state.s2.prod?.name || 'Headphones'}. Shop A has MP = ₹${state.s2.mpA}, Discount = ${state.s2.discA}% (SP = ₹${state.s2.spA}). Shop B has MP = ₹${state.s2.mpB}, Discount = ${state.s2.discB}% (SP = ₹${state.s2.spB}). Cheaper shop is Shop ${state.s2.betterShop}.`;
+      } else if (tab === 3) {
+        return `Current Topic: Section 3 (Profit or Loss?). Item: ${state.s3.item?.name || 'Bicycle'}. Cost Price (CP) = ₹${state.s3.cp}, Selling Price (SP) = ₹${state.s3.sp}. Nature: ${state.s3.nature}, Difference: ₹${state.s3.diff}, Percentage: ${state.s3.pct}%.`;
+      } else {
+        return `Current Topic: Section 4 (Simple Interest). Principal (P) = ₹${state.s4.p}, Rate (R) = ${state.s4.r}%, Time (T) = ${state.s4.t} years. SI = ₹${state.s4.si}, Amount = ₹${state.s4.amount}. Scenario: "${document.getElementById('s4ScenarioText').innerText}".`;
+      }
+    }
+
+    async function askAITutorForCurrentSection(sectionNum) {
+      playSound('click');
+      switchTab(sectionNum);
+      const modal = document.getElementById('aiTutorModal');
+      if (modal.classList.contains('hidden')) {
+        toggleModal('aiTutorModal');
+      }
+      const context = getCurrentSectionContext();
+      appendAIMessage('You', `Can you help me investigate the current problem in Section ${sectionNum}? Please give me a Socratic detective clue without giving away the final number.`);
+      showAILoading();
+
+      try {
+        const prompt = `The student is looking at the following active math problem on their screen:\n"${context}"\n\nProvide an engaging detective hint. Teach them the mental model and the step-by-step formula logic clearly and encourage them to solve it.`;
+        const reply = await callGemini(prompt);
+        removeAILoading();
+        appendAIMessage('AI', reply.replace(/\n/g, '<br>'), true);
+      } catch (err) {
+        removeAILoading();
+        appendAIMessage('AI', '⚠️ <em>Inspector Rupee lost radio connection for a moment. Please check your internet connection or try again in a few seconds!</em>', true);
+      }
+    }
+
+    async function askPresetPrompt(type) {
+      playSound('click');
+      const context = getCurrentSectionContext();
+      let prompt = '';
+      let userDisplay = '';
+
+      if (type === 'concept') {
+        userDisplay = 'Can you explain the main mathematical concept behind this problem in very simple terms?';
+        prompt = `The student is studying this context: "${context}". Explain the core concept (e.g. why discount reduces MP, or why profit is on CP, or how interest accumulates over time) using an intuitive everyday analogy suitable for an 8th grader.`;
+      } else if (type === 'socratic') {
+        userDisplay = 'Guide me step-by-step with detective questions to solve this.';
+        prompt = `The student is looking at: "${context}". Break down the solution path into 2-3 mini investigative steps or questions that lead them to calculate the answer themselves.`;
+      } else if (type === 'realworld') {
+        userDisplay = 'Why does understanding this matter in real-life shopping and banking?';
+        prompt = `The student is working on: "${context}". Explain why this math skill saves people real money or prevents them from being fooled by marketing tricks in shopping malls or banks in India.`;
+      } else if (type === 'story') {
+        userDisplay = 'Create a fun shopping story around this math problem!';
+        prompt = `Using the current numbers from: "${context}", write a short 3-sentence funny detective shopping story featuring an 8th grade shopper outsmarting tricky bazaar prices.`;
+      }
+
+      appendAIMessage('You', userDisplay);
+      showAILoading();
+
+      try {
+        const reply = await callGemini(prompt);
+        removeAILoading();
+        appendAIMessage('AI', reply.replace(/\n/g, '<br>'), true);
+      } catch (err) {
+        removeAILoading();
+        appendAIMessage('AI', '⚠️ <em>Inspector Rupee encountered a small bump on the line. Let us try asking again in a moment!</em>', true);
+      }
+    }
+
+    async function handleUserAISubmit(event) {
+      event.preventDefault();
+      const input = document.getElementById('aiUserQueryInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      playSound('click');
+      input.value = '';
+      appendAIMessage('You', query);
+      showAILoading();
+
+      const context = getCurrentSectionContext();
+      const fullPrompt = `The 8th grade student is asking: "${query}".
+Active problem context on screen:
+"${context}"
+
+Answer in an encouraging, clear, Socratic manner. If they asked for direct answers, explain the step rather than giving the raw number immediately unless they insist. Keep it under 150 words.`;
+
+      try {
+        const reply = await callGemini(fullPrompt);
+        removeAILoading();
+        appendAIMessage('AI', reply.replace(/\n/g, '<br>'), true);
+      } catch (err) {
+        removeAILoading();
+        appendAIMessage('AI', '⚠️ <em>Inspector Rupee could not process this request right now. Please try again shortly!</em>', true);
+      }
+    }
+
+    async function diagnoseMistakeWithAI(sectionNum) {
+      playSound('click');
+      const modal = document.getElementById('aiTutorModal');
+      if (modal.classList.contains('hidden')) {
+        toggleModal('aiTutorModal');
+      }
+
+      let mistakeDetails = '';
+      if (sectionNum === 1) {
+        const userDisc = document.getElementById('s1InputDiscount').value;
+        const userSP = document.getElementById('s1InputSP').value;
+        mistakeDetails = `Problem: Marked Price = ₹${state.s1.mp}, Discount Rate = ${state.s1.rate}%. Correct Discount = ₹${state.s1.discount}, Correct SP = ₹${state.s1.sp}.
+Student entered: Discount = ₹${userDisc}, Selling Price = ₹${userSP}.`;
+      } else if (sectionNum === 2) {
+        mistakeDetails = `Problem: Shop A (MP = ₹${state.s2.mpA}, ${state.s2.discA}% OFF -> SP = ₹${state.s2.spA}) vs Shop B (MP = ₹${state.s2.mpB}, ${state.s2.discB}% OFF -> SP = ₹${state.s2.spB}). Better is Shop ${state.s2.betterShop}.
+Student chose: Shop ${state.s2.selectedShop}.`;
+      } else if (sectionNum === 3) {
+        const userAmt = document.getElementById('s3InputAmount').value;
+        mistakeDetails = `Problem: Cost Price = ₹${state.s3.cp}, Selling Price = ₹${state.s3.sp}. Nature = ${state.s3.nature}, Difference = ₹${state.s3.diff}, Percentage = ${state.s3.pct}%.
+Student selected Nature = "${state.s3.selectedNature}", Amount = ₹${userAmt}, Percentage = ${state.s3.selectedPercent}%.`;
+      } else if (sectionNum === 4) {
+        const userSI = document.getElementById('s4InputSI').value;
+        const userAmt = document.getElementById('s4InputAmount').value;
+        mistakeDetails = `Problem: Principal = ₹${state.s4.p}, Rate = ${state.s4.r}%, Time = ${state.s4.t} years. Correct SI = ₹${state.s4.si}, Correct Total Amount = ₹${state.s4.amount}.
+Student entered: SI = ₹${userSI}, Total Amount = ₹${userAmt}.`;
+      }
+
+      appendAIMessage('You', `Inspector Rupee, can you diagnose where my calculation or thinking went wrong in Section ${sectionNum}?`);
+      showAILoading();
+
+      try {
+        const prompt = `A Grade 8 student submitted an incorrect answer on Comparing Quantities.
+Here is the problem and what the student entered:
+${mistakeDetails}
+
+Diagnose their exact misconception kindly. For example, did they calculate discount but forgot to subtract? Did they divide by SP instead of CP? Did they confuse percentage base? Give them a gentle, insightful 'Aha!' moment and tell them how to fix it without making them feel bad!`;
+
+        const diagnosis = await callGemini(prompt);
+        removeAILoading();
+        appendAIMessage('AI', diagnosis.replace(/\n/g, '<br>'), true);
+      } catch (err) {
+        removeAILoading();
+        appendAIMessage('AI', '⚠️ <em>Unable to diagnose right now. Please try again!</em>', true);
+      }
+    }
+
+    // State management
+    const state = {
+      score: 0,
+      solvedCount: 0,
+      currentTab: 1,
+      soundEnabled: true,
+      attempts: { 1: 0, 2: 0, 3: 0, 4: 0 },
+      solvedSections: new Set(),
+      // Section data caches
+      s1: {},
+      s2: {},
+      s3: { selectedNature: null, selectedPercent: null },
+      s4: {}
+    };
+
+    // Tone.js audio synth setup
+    let synth = null;
+    function initAudio() {
+      if (!synth && window.Tone) {
+        try {
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.4 }
+          }).toDestination();
+          synth.volume.value = -8;
+        } catch (e) {
+          console.warn('Tone.js audio failed to initialize', e);
+        }
+      }
+    }
+
+    function playSound(type) {
+      if (!state.soundEnabled) return;
+      initAudio();
+      if (!synth || Tone.context.state !== 'running') {
+        Tone.start().catch(() => {});
+      }
+      try {
+        if (type === 'correct') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5'], '8n');
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease(['F3', 'D#3'], '12n');
+        } else if (type === 'click') {
+          synth.triggerAttackRelease('A4', '32n');
+        } else if (type === 'fanfare') {
+          synth.triggerAttackRelease(['C5', 'G5', 'C6'], '4n');
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      icon.innerText = state.soundEnabled ? '🔊' : '🔇';
+    }
+
+    function switchTab(tabIndex) {
+      playSound('click');
+      state.currentTab = tabIndex;
+      document.querySelectorAll('.section-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-button').forEach(el => {
+        el.classList.remove('bg-gradient-to-r', 'from-emerald-500', 'to-teal-500', 'text-white', 'shadow-lg', 'shadow-emerald-200', 'border-emerald-400');
+        el.classList.add('bg-white', 'text-slate-700', 'border-purple-200');
+      });
+
+      const activePane = document.getElementById(`section-${tabIndex}`);
+      if (activePane) activePane.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-btn-${tabIndex}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-700', 'border-purple-200');
+        activeBtn.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-500', 'text-white', 'shadow-lg', 'shadow-emerald-200', 'border-emerald-400');
+      }
+    }
+
+    function toggleModal(modalId) {
+      playSound('click');
+      const el = document.getElementById(modalId);
+      if (el) {
+        if (el.classList.contains('hidden')) {
+          el.classList.remove('hidden');
+          el.classList.add('flex');
+          if (modalId === 'scratchpadModal') {
+            setTimeout(initScratchCanvas, 50);
+          }
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      }
+    }
+
+    function toggleTeacherMode() {
+      playSound('click');
+      const content = document.getElementById('teacherContent');
+      const icon = document.getElementById('teacherToggleIcon');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.innerText = '▲ Hide';
+      } else {
+        content.classList.add('hidden');
+        icon.innerText = '▼ View';
+      }
+    }
+
+    function updateStatsUI() {
+      document.getElementById('totalScoreDisplay').innerText = state.score;
+      document.getElementById('solvedCountDisplay').innerText = `${state.solvedCount} / 8`;
+      
+      const pct = Math.min(100, Math.round((state.solvedCount / 8) * 100));
+      document.getElementById('missionProgressBar').style.width = `${pct}%`;
+
+      if (state.solvedCount >= 8) {
+        showCompletionScreen();
+      }
+    }
+
+    function showHint(sectionIndex) {
+      playSound('click');
+      const hintBox = document.getElementById(`s${sectionIndex}HintBox`);
+      if (hintBox) {
+        hintBox.classList.toggle('hidden');
+      }
+    }
+
+    const discountItemPool = [
+      { name: 'School Bag', emoji: '🎒', category: 'School Essentials', mpBase: [1000, 1200, 1500, 1800, 2000] },
+      { name: 'Running Sneakers', emoji: '👟', category: 'Footwear', mpBase: [1600, 2000, 2400, 3000] },
+      { name: 'Cricket Bat', emoji: '🏏', category: 'Sports Goods', mpBase: [1200, 1500, 2200, 2500] },
+      { name: 'Geometry Box Pro', emoji: '📐', category: 'Stationery', mpBase: [300, 400, 500, 600] },
+      { name: 'Study Desk Lamp', emoji: '💡', category: 'Home Study', mpBase: [800, 1000, 1200, 1400] }
+    ];
+
+    function generateDiscountQuestion() {
+      state.attempts[1] = 0;
+      const item = discountItemPool[Math.floor(Math.random() * discountItemPool.length)];
+      const mp = item.mpBase[Math.floor(Math.random() * item.mpBase.length)];
+      const rates = [5, 10, 15, 20, 25, 30];
+      const rate = rates[Math.floor(Math.random() * rates.length)];
+
+      state.s1 = {
+        item,
+        mp,
+        rate,
+        discount: (mp * rate) / 100,
+        sp: mp - (mp * rate) / 100
+      };
+
+      document.getElementById('s1ItemEmoji').innerText = item.emoji;
+      document.getElementById('s1ItemCategory').innerText = item.category;
+      document.getElementById('s1ItemName').innerText = item.name;
+      document.getElementById('s1DisplayMP').innerText = `₹${mp.toLocaleString('en-IN')}`;
+      document.getElementById('s1DisplayDiscountRate').innerText = `${rate}% OFF`;
+
+      // Clear inputs and feedback
+      document.getElementById('s1InputDiscount').value = '';
+      document.getElementById('s1InputSP').value = '';
+      const fb = document.getElementById('s1FeedbackBox');
+      fb.className = 'hidden p-4 rounded-2xl text-sm transition-all duration-300';
+      fb.innerHTML = '';
+      document.getElementById('s1HintBox').classList.add('hidden');
+
+      // Update preset buttons visually
+      highlightRateBtn(rate);
+    }
+
+    function setDiscountRate(newRate) {
+      playSound('click');
+      state.s1.rate = newRate;
+      state.s1.discount = (state.s1.mp * newRate) / 100;
+      state.s1.sp = state.s1.mp - state.s1.discount;
+      document.getElementById('s1DisplayDiscountRate').innerText = `${newRate}% OFF`;
+      highlightRateBtn(newRate);
+    }
+
+    function highlightRateBtn(rate) {
+      document.querySelectorAll('#s1DiscountPresets button').forEach(btn => {
+        if (btn.innerText.trim() === `${rate}%`) {
+          btn.className = 'rate-btn active text-xs py-2 px-2 font-black rounded-xl border-2 bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-600 text-white active:scale-95 shadow-md shadow-emerald-200 min-h-[44px]';
+        } else {
+          btn.className = 'rate-btn text-xs py-2 px-2 font-black rounded-xl border-2 bg-white border-emerald-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 active:scale-95 shadow-sm min-h-[44px]';
+        }
+      });
+    }
+
+    function checkDiscountAnswer() {
+      const userDisc = parseFloat(document.getElementById('s1InputDiscount').value);
+      const userSP = parseFloat(document.getElementById('s1InputSP').value);
+      const fb = document.getElementById('s1FeedbackBox');
+      fb.classList.remove('hidden');
+
+      if (isNaN(userDisc) || isNaN(userSP)) {
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-100 border-2 border-rose-300 text-rose-950 font-medium';
+        fb.innerHTML = '⚠️ <strong>Please fill in both numbers</strong> before checking your answer!';
+        playSound('wrong');
+        return;
+      }
+
+      state.attempts[1]++;
+      const isDiscCorrect = Math.abs(userDisc - state.s1.discount) < 0.1;
+      const isSPCorrect = Math.abs(userSP - state.s1.sp) < 0.1;
+
+      if (isDiscCorrect && isSPCorrect) {
+        playSound('correct');
+        const points = state.attempts[1] === 1 ? 10 : (state.attempts[1] === 2 ? 5 : 2);
+        state.score += points;
+        state.solvedCount++;
+        updateStatsUI();
+
+        fb.className = 'p-4 rounded-2xl text-sm bg-emerald-100 border-2 border-emerald-400 text-emerald-950 space-y-2';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-black text-emerald-900">
+            <span>🎉 Outstanding Detective Work!</span>
+            <span class="bg-emerald-200 text-emerald-950 text-xs px-2.5 py-0.5 rounded-full font-black border border-emerald-300">+${points} pts</span>
+          </div>
+          <p class="text-xs leading-relaxed font-semibold">
+            <strong>Step 1:</strong> Discount = MP × Discount% = ₹${state.s1.mp} × ${state.s1.rate} / 100 = <strong>₹${state.s1.discount}</strong>.
+            <br>
+            <strong>Step 2:</strong> Selling Price = MP − Discount = ₹${state.s1.mp} − ₹${state.s1.discount} = <strong>₹${state.s1.sp}</strong>.
+          </p>
+          <div class="pt-1">
+            <button onclick="generateDiscountQuestion()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white font-black text-xs rounded-xl shadow-md transition active:scale-95">
+              Next Discount Item →
+            </button>
+          </div>
+        `;
+      } else {
+        playSound('wrong');
+        fb.className = 'p-4 rounded-2xl text-sm bg-amber-100 border-2 border-amber-300 text-amber-950 space-y-2';
+        fb.innerHTML = `
+          <div class="font-black text-amber-950">🔍 Not quite right yet. Try again!</div>
+          <p class="text-xs font-semibold">
+            ${!isDiscCorrect ? '• Check your discount calculation. Remember: MP × (Discount% ÷ 100).<br>' : '✓ Your discount value is correct!<br>'}
+            ${!isSPCorrect ? '• Check your Selling Price: Subtract your discount from the Marked Price (₹' + state.s1.mp + ').' : '✓ Your Selling Price is correct!'}
+          </p>
+          <div class="pt-2">
+            <button onclick="diagnoseMistakeWithAI(1)" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-xs rounded-xl shadow-md transition inline-flex items-center gap-1.5 active:scale-95">
+              <span>🤖</span> Diagnose My Mistake with AI
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    const shopProducts = [
+      { name: 'Wireless Headphones', emoji: '🎧' },
+      { name: 'Smart Fitness Watch', emoji: '⌚' },
+      { name: 'Gaming Mouse', emoji: '🖱️' },
+      { name: 'Scientific Calculator', emoji: '🔢' }
+    ];
+
+    function generateShopComparisonQuestion() {
+      state.attempts[2] = 0;
+      state.s2.selectedShop = null;
+
+      const prod = shopProducts[Math.floor(Math.random() * shopProducts.length)];
+      document.getElementById('s2ProductName').innerText = prod.name;
+      document.getElementById('s2ProductEmoji').innerText = prod.emoji;
+
+      // Ensure that prices and discounts are distinct and make sense
+      let mpA, discA, spA, mpB, discB, spB;
+      do {
+        mpA = (Math.floor(Math.random() * 15) + 12) * 100; // 1200 to 2600
+        discA = [10, 15, 20, 25, 30][Math.floor(Math.random() * 5)];
+        spA = mpA - (mpA * discA / 100);
+
+        mpB = (Math.floor(Math.random() * 15) + 12) * 100;
+        discB = [5, 10, 15, 20, 25][Math.floor(Math.random() * 5)];
+        spB = mpB - (mpB * discB / 100);
+      } while (Math.abs(spA - spB) < 20 || spA === spB); // Must have a clear better winner
+
+      state.s2 = {
+        prod,
+        mpA, discA, spA,
+        mpB, discB, spB,
+        betterShop: spA < spB ? 'A' : 'B'
+      };
+
+      document.getElementById('s2ShopAMP').innerText = `₹${mpA.toLocaleString('en-IN')}`;
+      document.getElementById('s2ShopADisc').innerText = `${discA}% OFF`;
+      document.getElementById('s2ShopBMP').innerText = `₹${mpB.toLocaleString('en-IN')}`;
+      document.getElementById('s2ShopBDisc').innerText = `${discB}% OFF`;
+
+      // Reset card selection styles
+      document.getElementById('cardShopA').classList.remove('ring-4', 'ring-blue-500', 'bg-blue-100/70');
+      document.getElementById('cardShopB').classList.remove('ring-4', 'ring-purple-500', 'bg-purple-100/70');
+      document.getElementById('radioShopA').checked = false;
+      document.getElementById('radioShopB').checked = false;
+
+      const fb = document.getElementById('s2FeedbackBox');
+      fb.className = 'hidden p-4 rounded-2xl text-left text-sm transition-all duration-300';
+      fb.innerHTML = '';
+      document.getElementById('s2HintBox').classList.add('hidden');
+    }
+
+    function selectShop(choice) {
+      playSound('click');
+      state.s2.selectedShop = choice;
+      const cardA = document.getElementById('cardShopA');
+      const cardB = document.getElementById('cardShopB');
+      const radA = document.getElementById('radioShopA');
+      const radB = document.getElementById('radioShopB');
+
+      if (choice === 'A') {
+        cardA.classList.add('ring-4', 'ring-blue-500', 'bg-blue-100/70');
+        cardB.classList.remove('ring-4', 'ring-purple-500', 'bg-purple-100/70');
+        radA.checked = true;
+        radB.checked = false;
+      } else {
+        cardB.classList.add('ring-4', 'ring-purple-500', 'bg-purple-100/70');
+        cardA.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-100/70');
+        radB.checked = true;
+        radA.checked = false;
+      }
+    }
+
+    function checkShopAnswer() {
+      const fb = document.getElementById('s2FeedbackBox');
+      fb.classList.remove('hidden');
+
+      if (!state.s2.selectedShop) {
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-50 border border-rose-200 text-rose-800';
+        fb.innerHTML = '⚠️ <strong>Please select either Shop A or Shop B</strong> by clicking on its card!';
+        playSound('wrong');
+        return;
+      }
+
+      state.attempts[2]++;
+      const isCorrect = state.s2.selectedShop === state.s2.betterShop;
+      const winnerName = state.s2.betterShop === 'A' ? 'Shop A (MegaMart)' : 'Shop B (City SuperStore)';
+      const winningPrice = Math.min(state.s2.spA, state.s2.spB);
+      const losingPrice = Math.max(state.s2.spA, state.s2.spB);
+      const difference = losingPrice - winningPrice;
+
+      if (isCorrect) {
+        playSound('correct');
+        const points = state.attempts[2] === 1 ? 10 : (state.attempts[2] === 2 ? 5 : 2);
+        state.score += points;
+        state.solvedCount++;
+        updateStatsUI();
+
+        fb.className = 'p-4 rounded-2xl text-sm bg-emerald-50 border border-emerald-300 text-emerald-950 space-y-3';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-emerald-800">
+            <span>🎯 Brilliant Deduction! ${winnerName} is indeed cheaper!</span>
+            <span class="bg-emerald-200 text-emerald-900 text-xs px-2 py-0.5 rounded-full">+${points} pts</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="bg-white p-3 rounded-xl border border-emerald-200">
+              <strong class="text-blue-700">Shop A Bill:</strong>
+              <br>MP = ₹${state.s2.mpA}
+              <br>Discount = ${state.s2.discA}% = ₹${(state.s2.mpA * state.s2.discA / 100)}
+              <br><span class="font-bold">Final Price = ₹${state.s2.spA}</span>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-emerald-200">
+              <strong class="text-indigo-700">Shop B Bill:</strong>
+              <br>MP = ₹${state.s2.mpB}
+              <br>Discount = ${state.s2.discB}% = ₹${(state.s2.mpB * state.s2.discB / 100)}
+              <br><span class="font-bold">Final Price = ₹${state.s2.spB}</span>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-900">
+            The customer saves <strong>₹${difference}</strong> by choosing ${winnerName}!
+          </p>
+          <div>
+            <button onclick="generateShopComparisonQuestion()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">
+              Compare Another Deal →
+            </button>
+          </div>
+        `;
+      } else {
+        playSound('wrong');
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-50 border border-rose-200 text-rose-900 space-y-2';
+        fb.innerHTML = `
+          <div class="font-bold text-rose-800">🔍 Oops! Look at the calculated final prices:</div>
+          <div class="text-xs space-y-1">
+            <p>• Shop A final price: ₹${state.s2.mpA} − ₹${(state.s2.mpA * state.s2.discA / 100)} = <strong>₹${state.s2.spA}</strong></p>
+            <p>• Shop B final price: ₹${state.s2.mpB} − ₹${(state.s2.mpB * state.s2.discB / 100)} = <strong>₹${state.s2.spB}</strong></p>
+          </div>
+          <p class="text-xs font-semibold">Try to select the one with the smaller final amount to pay!</p>
+          <div class="pt-2">
+            <button onclick="diagnoseMistakeWithAI(2)" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow transition inline-flex items-center gap-1.5">
+              <span>🤖</span> Diagnose My Mistake with AI
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    const profitLossItems = [
+      { name: 'Mountain Bicycle', emoji: '🚲' },
+      { name: 'Handcrafted Vase', emoji: '🏺' },
+      { name: 'Guitar', emoji: '🎸' },
+      { name: 'Smart Speaker', emoji: '🔊' },
+      { name: 'Sports Jacket', emoji: '🧥' }
+    ];
+
+    function generateProfitLossQuestion() {
+      state.attempts[3] = 0;
+      state.s3.selectedNature = null;
+      state.s3.selectedPercent = null;
+
+      const item = profitLossItems[Math.floor(Math.random() * profitLossItems.length)];
+      document.getElementById('s3ItemName').innerText = item.name;
+      document.getElementById('s3ItemEmoji').innerText = item.emoji;
+
+      // Nice clean numbers for 8th graders (multiples of 100, whole percentages)
+      const cp = [400, 500, 600, 800, 1000, 1200][Math.floor(Math.random() * 6)];
+      const percentChoicesPool = [5, 10, 15, 20, 25];
+      const actualPct = percentChoicesPool[Math.floor(Math.random() * percentChoicesPool.length)];
+      const isProfit = Math.random() > 0.45; // 55% profit, 45% loss
+
+      const diff = (cp * actualPct) / 100;
+      const sp = isProfit ? cp + diff : cp - diff;
+
+      state.s3 = {
+        item,
+        cp,
+        sp,
+        nature: isProfit ? 'Profit' : 'Loss',
+        diff,
+        pct: actualPct,
+        selectedNature: null,
+        selectedPercent: null
+      };
+
+      document.getElementById('s3DisplayCP').innerText = `₹${cp.toLocaleString('en-IN')}`;
+      document.getElementById('s3DisplaySP').innerText = `₹${sp.toLocaleString('en-IN')}`;
+      document.getElementById('s3InputAmount').value = '';
+
+      // Reset nature buttons
+      const btnP = document.getElementById('btnNatureProfit');
+      const btnL = document.getElementById('btnNatureLoss');
+      btnP.className = 'py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-black text-sm text-slate-700 hover:border-emerald-500 flex items-center justify-center gap-2 active:scale-95 shadow-sm min-h-[48px]';
+      btnL.className = 'py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-black text-sm text-slate-700 hover:border-rose-500 flex items-center justify-center gap-2 active:scale-95 shadow-sm min-h-[48px]';
+
+      // Generate 4 MCQs for Percentage (1 correct + 3 plausible distractors)
+      const distractors = new Set([actualPct]);
+      while (distractors.size < 4) {
+        const randomP = percentChoicesPool[Math.floor(Math.random() * percentChoicesPool.length)];
+        distractors.add(randomP);
+        if (distractors.size < 4) distractors.add(actualPct + (Math.random() > 0.5 ? 5 : -2));
+      }
+      const choicesArray = Array.from(distractors).sort((a, b) => a - b);
+
+      const choiceContainer = document.getElementById('s3PercentChoiceContainer');
+      choiceContainer.innerHTML = '';
+      choicesArray.forEach(choiceVal => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 's3-pct-btn py-2.5 px-3 rounded-2xl border-2 border-purple-200 bg-white font-black text-xs sm:text-sm text-slate-700 hover:border-purple-500 transition active:scale-95 shadow-sm min-h-[44px]';
+        btn.innerText = `${choiceVal}%`;
+        btn.onclick = () => selectPercentOption(choiceVal, btn);
+        choiceContainer.appendChild(btn);
+      });
+
+      const fb = document.getElementById('s3FeedbackBox');
+      fb.className = 'hidden p-4 rounded-2xl text-sm transition-all duration-300';
+      fb.innerHTML = '';
+      document.getElementById('s3HintBox').classList.add('hidden');
+    }
+
+    function selectNature(type) {
+      playSound('click');
+      state.s3.selectedNature = type;
+      const btnP = document.getElementById('btnNatureProfit');
+      const btnL = document.getElementById('btnNatureLoss');
+
+      if (type === 'Profit') {
+        btnP.className = 'py-3 px-4 rounded-2xl border-3 border-emerald-500 bg-emerald-100 font-black text-sm text-emerald-950 flex items-center justify-center gap-2 shadow-md min-h-[48px]';
+        btnL.className = 'py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-bold text-sm text-slate-400 flex items-center justify-center gap-2 opacity-60 min-h-[48px]';
+      } else {
+        btnL.className = 'py-3 px-4 rounded-2xl border-3 border-rose-500 bg-rose-100 font-black text-sm text-rose-950 flex items-center justify-center gap-2 shadow-md min-h-[48px]';
+        btnP.className = 'py-3 px-4 rounded-2xl border-2 border-purple-200 bg-white font-bold text-sm text-slate-400 flex items-center justify-center gap-2 opacity-60 min-h-[48px]';
+      }
+    }
+
+    function selectPercentOption(val, btnElement) {
+      playSound('click');
+      state.s3.selectedPercent = val;
+      document.querySelectorAll('.s3-pct-btn').forEach(b => {
+        b.className = 's3-pct-btn py-2.5 px-3 rounded-2xl border-2 border-purple-200 bg-white font-black text-xs sm:text-sm text-slate-700 hover:border-purple-500 transition active:scale-95 shadow-sm min-h-[44px]';
+      });
+      btnElement.className = 's3-pct-btn py-2.5 px-3 rounded-2xl border-3 border-purple-600 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-xs sm:text-sm shadow-md shadow-purple-200 transition min-h-[44px]';
+    }
+
+    function checkProfitLossAnswer() {
+      const fb = document.getElementById('s3FeedbackBox');
+      fb.classList.remove('hidden');
+
+      const userAmt = parseFloat(document.getElementById('s3InputAmount').value);
+
+      if (!state.s3.selectedNature || isNaN(userAmt) || state.s3.selectedPercent === null) {
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-50 border border-rose-200 text-rose-800';
+        fb.innerHTML = '⚠️ <strong>Please answer all 3 parts</strong>: (1) Profit/Loss, (2) Amount, and (3) Percentage!';
+        playSound('wrong');
+        return;
+      }
+
+      state.attempts[3]++;
+      const isNatureCorrect = state.s3.selectedNature === state.s3.nature;
+      const isAmtCorrect = Math.abs(userAmt - state.s3.diff) < 0.1;
+      const isPctCorrect = Math.abs(state.s3.selectedPercent - state.s3.pct) < 0.1;
+
+      if (isNatureCorrect && isAmtCorrect && isPctCorrect) {
+        playSound('correct');
+        const points = state.attempts[3] === 1 ? 10 : (state.attempts[3] === 2 ? 5 : 2);
+        state.score += points;
+        state.solvedCount++;
+        updateStatsUI();
+
+        fb.className = 'p-4 rounded-2xl text-sm bg-purple-50 border border-purple-300 text-purple-950 space-y-2';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-purple-900">
+            <span>🎉 Perfect Accounting Detective!</span>
+            <span class="bg-purple-200 text-purple-900 text-xs px-2 py-0.5 rounded-full">+${points} pts</span>
+          </div>
+          <p class="text-xs leading-relaxed">
+            • Since SP (₹${state.s3.sp}) is ${state.s3.nature === 'Profit' ? 'greater' : 'less'} than CP (₹${state.s3.cp}), it is a <strong>${state.s3.nature}</strong>.
+            <br>• Amount = |₹${state.s3.sp} − ₹${state.s3.cp}| = <strong>₹${state.s3.diff}</strong>.
+            <br>• ${state.s3.nature}% = (₹${state.s3.diff} / ₹${state.s3.cp}) × 100 = <strong>${state.s3.pct}%</strong>.
+          </p>
+          <div>
+            <button onclick="generateProfitLossQuestion()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow transition">
+              Next Merchant Challenge →
+            </button>
+          </div>
+        `;
+      } else {
+        playSound('wrong');
+        fb.className = 'p-4 rounded-2xl text-sm bg-amber-50 border border-amber-300 text-amber-950 space-y-2';
+        fb.innerHTML = `
+          <div class="font-bold text-amber-900">🔍 Check your findings:</div>
+          <div class="text-xs space-y-1">
+            <p>${isNatureCorrect ? '✓ Correct nature identified (' + state.s3.nature + ')' : '• Since ' + (state.s3.sp > state.s3.cp ? 'SP > CP' : 'CP > SP') + ', check whether it is Profit or Loss.'}</p>
+            <p>${isAmtCorrect ? '✓ Correct difference amount (₹' + state.s3.diff + ')' : '• Amount difference is incorrect. Subtract the two numbers.'}</p>
+            <p>${isPctCorrect ? '✓ Correct percentage (' + state.s3.pct + '%)' : '• Percentage formula: (Amount / Cost Price) × 100. Always divide by CP (₹' + state.s3.cp + ')!'}</p>
+          </div>
+          <div class="pt-2">
+            <button onclick="diagnoseMistakeWithAI(3)" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow transition inline-flex items-center gap-1.5">
+              <span>🤖</span> Diagnose My Mistake with AI
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    const siScenarios = [
+      "A farmer borrowed money from a rural cooperative bank to purchase a modern solar drip irrigation pump.",
+      "An artisan invested their savings in a fixed deposit scheme at the local post office.",
+      "A small bakery owner took a low-interest startup loan to purchase an electric commercial oven.",
+      "A student opened a 3-year recurring scholarship savings account."
+    ];
+
+    function generateSIQuestion() {
+      state.attempts[4] = 0;
+      const scenario = siScenarios[Math.floor(Math.random() * siScenarios.length)];
+      document.getElementById('s4ScenarioText').innerText = scenario;
+
+      // Realistic clean figures:
+      const p = [2000, 3000, 4000, 5000, 6000, 8000, 10000][Math.floor(Math.random() * 7)];
+      const r = [5, 6, 8, 10, 12][Math.floor(Math.random() * 5)];
+      const t = [1, 2, 3, 4, 5][Math.floor(Math.random() * 5)];
+
+      const si = (p * r * t) / 100;
+      const amount = p + si;
+
+      state.s4 = { p, r, t, si, amount };
+
+      document.getElementById('s4DisplayP').innerText = `₹${p.toLocaleString('en-IN')}`;
+      document.getElementById('s4DisplayR').innerText = `${r}% per annum`;
+      document.getElementById('s4DisplayT').innerText = `${t} Year${t > 1 ? 's' : ''}`;
+
+      document.getElementById('s4InputSI').value = '';
+      document.getElementById('s4InputAmount').value = '';
+
+      const fb = document.getElementById('s4FeedbackBox');
+      fb.className = 'hidden p-4 rounded-2xl text-sm transition-all duration-300';
+      fb.innerHTML = '';
+      document.getElementById('s4HintBox').classList.add('hidden');
+    }
+
+    function checkSIAnswer() {
+      const fb = document.getElementById('s4FeedbackBox');
+      fb.classList.remove('hidden');
+
+      const userSI = parseFloat(document.getElementById('s4InputSI').value);
+      const userAmt = parseFloat(document.getElementById('s4InputAmount').value);
+
+      if (isNaN(userSI) || isNaN(userAmt)) {
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-50 border border-rose-200 text-rose-800';
+        fb.innerHTML = '⚠️ <strong>Please enter both Simple Interest and Total Amount</strong>!';
+        playSound('wrong');
+        return;
+      }
+
+      state.attempts[4]++;
+      const isSICorrect = Math.abs(userSI - state.s4.si) < 0.1;
+      const isAmtCorrect = Math.abs(userAmt - state.s4.amount) < 0.1;
+
+      if (isSICorrect && isAmtCorrect) {
+        playSound('correct');
+        const points = state.attempts[4] === 1 ? 10 : (state.attempts[4] === 2 ? 5 : 2);
+        state.score += points;
+        state.solvedCount++;
+        updateStatsUI();
+
+        fb.className = 'p-4 rounded-2xl text-sm bg-amber-50 border border-amber-300 text-amber-950 space-y-2';
+        fb.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-amber-900">
+            <span>🎉 Financial Detective Success!</span>
+            <span class="bg-amber-200 text-amber-900 text-xs px-2 py-0.5 rounded-full">+${points} pts</span>
+          </div>
+          <div class="text-xs leading-relaxed space-y-1">
+            <p><strong>Step 1 (Interest):</strong> SI = (P × R × T) / 100 = (₹${state.s4.p} × ${state.s4.r} × ${state.s4.t}) / 100 = <strong>₹${state.s4.si}</strong>.</p>
+            <p><strong>Step 2 (Total Amount):</strong> Amount = Principal + SI = ₹${state.s4.p} + ₹${state.s4.si} = <strong>₹${state.s4.amount}</strong>.</p>
+          </div>
+          <div>
+            <button onclick="generateSIQuestion()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition">
+              Solve Another Bank Record →
+            </button>
+          </div>
+        `;
+      } else {
+        playSound('wrong');
+        fb.className = 'p-4 rounded-2xl text-sm bg-rose-50 border border-rose-200 text-rose-950 space-y-2';
+        fb.innerHTML = `
+          <div class="font-bold text-rose-900">🔍 Let's re-verify:</div>
+          <p class="text-xs">
+            ${!isSICorrect ? '• Check Simple Interest calculation: (' + state.s4.p + ' × ' + state.s4.r + ' × ' + state.s4.t + ') ÷ 100.<br>' : '✓ Simple Interest is correct!<br>'}
+            ${!isAmtCorrect ? '• Check Total Amount: Add your SI to the initial Principal (₹' + state.s4.p + ').' : '✓ Total Amount is correct!'}
+          </p>
+          <div class="pt-2">
+            <button onclick="diagnoseMistakeWithAI(4)" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow transition inline-flex items-center gap-1.5">
+              <span>🤖</span> Diagnose My Mistake with AI
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    let scratchCanvas, scratchCtx;
+    let isDrawing = false;
+
+    function initScratchCanvas() {
+      scratchCanvas = document.getElementById('scratchCanvas');
+      if (!scratchCanvas) return;
+      scratchCtx = scratchCanvas.getContext('2d');
+
+      const container = document.getElementById('scratchContainer');
+      const rect = container ? container.getBoundingClientRect() : scratchCanvas.getBoundingClientRect();
+
+      // High-DPI screen adjustment
+      const dpr = window.devicePixelRatio || 1;
+      scratchCanvas.width = rect.width * dpr;
+      scratchCanvas.height = rect.height * dpr;
+      scratchCtx.scale(dpr, dpr);
+
+      scratchCtx.strokeStyle = '#9333ea';
+      scratchCtx.lineWidth = 3;
+      scratchCtx.lineCap = 'round';
+      scratchCtx.lineJoin = 'round';
+
+      // Mouse events
+      scratchCanvas.onmousedown = (e) => {
+        isDrawing = true;
+        const b = scratchCanvas.getBoundingClientRect();
+        scratchCtx.beginPath();
+        scratchCtx.moveTo(e.clientX - b.left, e.clientY - b.top);
+      };
+      scratchCanvas.onmousemove = (e) => {
+        if (!isDrawing) return;
+        const b = scratchCanvas.getBoundingClientRect();
+        scratchCtx.lineTo(e.clientX - b.left, e.clientY - b.top);
+        scratchCtx.stroke();
+      };
+      window.addEventListener('mouseup', () => { isDrawing = false; });
+
+      // Touch events for phone & tablet
+      scratchCanvas.ontouchstart = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const b = scratchCanvas.getBoundingClientRect();
+        isDrawing = true;
+        scratchCtx.beginPath();
+        scratchCtx.moveTo(touch.clientX - b.left, touch.clientY - b.top);
+      };
+      scratchCanvas.ontouchmove = (e) => {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const b = scratchCanvas.getBoundingClientRect();
+        scratchCtx.lineTo(touch.clientX - b.left, touch.clientY - b.top);
+        scratchCtx.stroke();
+      };
+      scratchCanvas.ontouchend = () => { isDrawing = false; };
+    }
+
+    function clearScratchpad() {
+      playSound('click');
+      if (scratchCanvas && scratchCtx) {
+        scratchCtx.save();
+        scratchCtx.setTransform(1, 0, 0, 1, 0, 0);
+        scratchCtx.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+        scratchCtx.restore();
+      }
+    }
+
+    // Auto-resize handler for orientation change and window resize
+    window.addEventListener('resize', () => {
+      const modal = document.getElementById('scratchpadModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        initScratchCanvas();
+      }
+    });
+
+    function showCompletionScreen() {
+      const comp = document.getElementById('completionSection');
+      comp.classList.remove('hidden');
+      document.getElementById('certFinalScore').innerText = state.score;
+      document.getElementById('certSolvedCount').innerText = `${state.solvedCount} Solved`;
+
+      playSound('fanfare');
+      if (window.confetti) {
+        window.confetti({
+          particleCount: 140,
+          spread: 90,
+          origin: { y: 0.6 }
+        });
+      }
+      comp.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function restartMission() {
+      playSound('click');
+      state.score = 0;
+      state.solvedCount = 0;
+      state.attempts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      document.getElementById('completionSection').classList.add('hidden');
+      updateStatsUI();
+
+      generateDiscountQuestion();
+      generateShopComparisonQuestion();
+      generateProfitLossQuestion();
+      generateSIQuestion();
+      switchTab(1);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      generateDiscountQuestion();
+      generateShopComparisonQuestion();
+      generateProfitLossQuestion();
+      generateSIQuestion();
+      updateStatsUI();
+    });
+  </script>
+</body>
+</html>
